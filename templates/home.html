@@ -1,0 +1,148 @@
+{% extends "base.html" %}
+
+{% block title %}Начало{% endblock %}
+
+{% block content %}
+
+<section class="border-b border-gray-200 bg-white">
+    <div class="mx-auto max-w-7xl px-6 py-24">
+
+        <div class="max-w-3xl">
+
+            <p class="mb-4 text-sm font-semibold uppercase tracking-wider text-gray-500">
+                University System
+            </p>
+
+            <h1 class="text-5xl font-bold tracking-tight sm:text-6xl">
+                Платформа за обучение и управление на дисциплини
+            </h1>
+
+            <p class="mt-6 max-w-2xl text-lg leading-8 text-gray-600">
+                Система, в която преподавателите управляват своите дисциплини
+                и задачи, а студентите получават задания и предават своите решения.
+            </p>
+
+            <div class="mt-8 flex gap-4">
+
+                {% if user.is_authenticated %}
+
+                    <a
+                        href="{% url 'dashboard' %}"
+                        class="bg-black px-6 py-3 text-sm font-medium text-white hover:bg-gray-800"
+                    >
+                        Към dashboard
+                    </a>
+
+                {% else %}
+
+                    <a
+                        href="{% url 'login' %}"
+                        class="bg-black px-6 py-3 text-sm font-medium text-white hover:bg-gray-800"
+                    >
+                        Вход
+                    </a>
+
+                {% endif %}
+
+            </div>
+
+        </div>
+
+    </div>
+</section>
+
+
+<section class="mx-auto max-w-7xl px-6 py-16">
+
+    <div class="mb-10">
+        <h2 class="text-3xl font-bold">
+            Как работи системата
+        </h2>
+
+        <p class="mt-2 text-gray-500">
+            Всеки тип потребител има собствен достъп и функционалност.
+        </p>
+    </div>
+
+
+    <div class="grid gap-6 md:grid-cols-3">
+
+        <div class="border border-gray-200 bg-white p-8">
+
+            <div class="mb-6 text-sm font-bold uppercase tracking-wider text-gray-400">
+                01
+            </div>
+
+            <h3 class="text-xl font-bold">
+                Администратори
+            </h3>
+
+            <p class="mt-4 leading-7 text-gray-600">
+                Управляват потребителите, дисциплините, преподавателите,
+                студентите и цялата информация в системата.
+            </p>
+
+        </div>
+
+
+        <div class="border border-gray-200 bg-white p-8">
+
+            <div class="mb-6 text-sm font-bold uppercase tracking-wider text-gray-400">
+                02
+            </div>
+
+            <h3 class="text-xl font-bold">
+                Преподаватели
+            </h3>
+
+            <p class="mt-4 leading-7 text-gray-600">
+                Управляват своите дисциплини, създават задачи и преглеждат
+                предадените решения от студентите.
+            </p>
+
+        </div>
+
+
+        <div class="border border-gray-200 bg-white p-8">
+
+            <div class="mb-6 text-sm font-bold uppercase tracking-wider text-gray-400">
+                03
+            </div>
+
+            <h3 class="text-xl font-bold">
+                Студенти
+            </h3>
+
+            <p class="mt-4 leading-7 text-gray-600">
+                Получават достъп до записаните дисциплини, виждат задачите
+                и качват своите решения.
+            </p>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<section class="border-t border-gray-200 bg-black text-white">
+
+    <div class="mx-auto max-w-7xl px-6 py-16">
+
+        <div class="max-w-2xl">
+
+            <h2 class="text-3xl font-bold">
+                Управлявай обучението на едно място.
+            </h2>
+
+            <p class="mt-4 leading-7 text-gray-300">
+                Дисциплини, задачи, решения и оценки в една централизирана система.
+            </p>
+
+        </div>
+
+    </div>
+
+</section>
+
+{% endblock %}

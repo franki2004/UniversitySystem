@@ -1,0 +1,235 @@
+{% extends "base.html" %}
+
+{% block title %}{{ assignment.title }}{% endblock %}
+
+{% block content %}
+
+<div class="mx-auto max-w-4xl">
+
+    <a
+        href="{% url 'discipline_detail' assignment.discipline.pk %}"
+        class="text-sm text-gray-500 hover:text-black hover:underline"
+    >
+        ← {{ assignment.discipline.name }}
+    </a>
+
+
+    <div class="mt-6 border border-gray-200 bg-white">
+
+        <div class="border-b border-gray-200 p-8">
+
+            <div class="flex items-start justify-between gap-6">
+
+                <div>
+
+                    <p class="text-sm font-medium text-gray-500">
+                        Задание
+                    </p>
+
+                    <h1 class="mt-2 text-3xl font-bold tracking-tight">
+                        {{ assignment.title }}
+                    </h1>
+
+                </div>
+
+
+                {% if user.role == "ADMIN" or user.is_superuser or user.role == "TEACHER" %}
+
+                    <div class="flex gap-4">
+
+                        <a
+                            href="{% url 'assignment_update' assignment.pk %}"
+                            class="text-sm font-medium hover:underline"
+                        >
+                            Редактирай
+                        </a>
+
+                        <a
+                            href="{% url 'assignment_delete' assignment.pk %}"
+                            class="text-sm font-medium text-red-600 hover:underline"
+                        >
+                            Изтрий
+                        </a>
+
+                    </div>
+
+                {% endif %}
+
+            </div>
+
+        </div>
+
+
+        <div class="p-8">
+
+            <div class="grid gap-6 border-b border-gray-200 pb-8 md:grid-cols-3">
+
+                <div>
+                    <div class="text-xs font-medium uppercase tracking-wide text-gray-500">
+                        Дисциплина
+                    </div>
+
+                    <div class="mt-1 font-medium">
+                        {{ assignment.discipline.name }}
+                    </div>
+                </div>
+
+
+                <div>
+                    <div class="text-xs font-medium uppercase tracking-wide text-gray-500">
+                        Създадено
+                    </div>
+
+                    <div class="mt-1">
+                        {{ assignment.created_at|date:"d.m.Y H:i" }}
+                    </div>
+                </div>
+
+
+                <div>
+                    <div class="text-xs font-medium uppercase tracking-wide text-gray-500">
+                        Краен срок
+                    </div>
+
+                    <div class="mt-1 font-medium">
+                        {{ assignment.deadline|date:"d.m.Y H:i" }}
+                    </div>
+                </div>
+
+            </div>
+
+
+            <div class="py-8">
+
+                <h2 class="text-lg font-semibold">
+                    Описание
+                </h2>
+
+                <div class="mt-4 whitespace-pre-line leading-7 text-gray-700">
+                    {{ assignment.description }}
+                </div>
+
+            </div>
+
+
+            {% if assignment.attachment %}
+
+                <div class="border-t border-gray-200 py-8">
+
+                    <h2 class="text-lg font-semibold">
+                        Файл към заданието
+                    </h2>
+
+                    <a
+                        href="{{ assignment.attachment.url }}"
+                        target="_blank"
+                        class="mt-4 inline-flex border border-gray-300 px-5 py-3 text-sm font-medium hover:bg-gray-50"
+                    >
+                        Изтегли файла
+                    </a>
+
+                </div>
+
+            {% endif %}
+
+
+            {% if user.role == "STUDENT" %}
+
+                <div class="border-t border-gray-200 pt-8">
+
+                    {% if submission %}
+
+                        <div class="border border-gray-200 bg-gray-50 p-6">
+
+                            <h2 class="text-lg font-semibold">
+                                Вашето предаване
+                            </h2>
+
+                            <p class="mt-2 text-sm text-gray-500">
+                                Предадено на:
+                                {{ submission.submitted_at|date:"d.m.Y H:i" }}
+                            </p>
+
+                            <a
+                                href="{{ submission.file.url }}"
+                                target="_blank"
+                                class="mt-4 inline-block font-medium hover:underline"
+                            >
+                                Отвори предадения файл →
+                            </a>
+
+                            <div class="mt-6 border-t border-gray-200 pt-5">
+
+                                {% if submission.grade %}
+                                    <p class="font-semibold">
+                                        Оценка:
+                                        {{ submission.grade }}
+                                    </p>
+                                {% else %}
+                                    <p class="text-sm text-gray-500">
+                                        Все още няма поставена оценка.
+                                    </p>
+                                {% endif %}
+
+                                {% if submission.feedback %}
+                                    <div class="mt-4">
+                                        <p class="text-sm font-semibold">
+                                            Обратна връзка
+                                        </p>
+
+                                        <p class="mt-2 whitespace-pre-line text-sm text-gray-600">
+                                            {{ submission.feedback }}
+                                        </p>
+                                    </div>
+                                {% endif %}
+
+                            </div>
+
+                        </div>
+
+
+                        <a
+                            href="{% url 'submit_assignment' assignment.pk %}"
+                            class="mt-4 inline-block bg-black px-5 py-3 text-sm font-medium text-white hover:bg-gray-800"
+                        >
+                            Предай нов файл
+                        </a>
+
+                    {% else %}
+
+                        <a
+                            href="{% url 'submit_assignment' assignment.pk %}"
+                            class="inline-block bg-black px-5 py-3 text-sm font-medium text-white hover:bg-gray-800"
+                        >
+                            Предай решение
+                        </a>
+
+                    {% endif %}
+
+                </div>
+
+            {% endif %}
+
+
+            {% if user.role == "TEACHER" or user.role == "ADMIN" or user.is_superuser %}
+
+                <div class="border-t border-gray-200 pt-8">
+
+                    <a
+                        href="{% url 'submission_list' assignment.pk %}"
+                        class="inline-block border border-gray-300 px-5 py-3 text-sm font-medium hover:bg-gray-50"
+                    >
+                        Виж предаванията
+                    </a>
+
+                </div>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

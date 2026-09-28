@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+
+{% block title %}Вход{% endblock %}
+
+{% block content %}
+
+<div class="flex min-h-[70vh] items-center justify-center">
+
+    <div class="w-full max-w-md border border-gray-200 bg-white p-8 shadow-sm">
+
+        <div class="mb-8">
+            <h1 class="text-2xl font-bold">
+                Вход
+            </h1>
+
+            <p class="mt-2 text-sm text-gray-500">
+                Влезте в University System
+            </p>
+        </div>
+
+        {% if form.errors %}
+            <div class="mb-6 border border-red-200 bg-red-50 p-4 text-sm text-red-700">
+                Невалидно потребителско име или парола.
+            </div>
+        {% endif %}
+
+        <form method="post" class="space-y-5">
+            {% csrf_token %}
+
+            <div>
+                <label class="mb-2 block text-sm font-medium">
+                    Потребителско име
+                </label>
+
+                <input
+                    type="text"
+                    name="username"
+                    required
+                    autofocus
+                    class="w-full border border-gray-300 px-4 py-3 outline-none focus:border-black"
+                >
+            </div>
+
+            <div>
+                <label class="mb-2 block text-sm font-medium">
+                    Парола
+                </label>
+
+                <input
+                    type="password"
+                    name="password"
+                    required
+                    class="w-full border border-gray-300 px-4 py-3 outline-none focus:border-black"
+                >
+            </div>
+
+            <button
+                type="submit"
+                class="w-full bg-black px-4 py-3 font-medium text-white hover:bg-gray-800"
+            >
+                Вход
+            </button>
+
+            <input
+                type="hidden"
+                name="next"
+                value="{{ next }}"
+            >
+        </form>
+
+    </div>
+
+</div>
+
+{% endblock %}

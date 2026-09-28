@@ -1,0 +1,198 @@
+{% extends "base.html" %}
+
+{% block title %}{{ discipline.name }}{% endblock %}
+
+{% block content %}
+
+<div class="mb-8 flex items-start justify-between gap-6">
+
+    <div>
+
+        <a
+            href="{% url 'discipline_list' %}"
+            class="text-sm text-gray-500 hover:text-black hover:underline"
+        >
+            ← Дисциплини
+        </a>
+
+        <h1 class="mt-4 text-4xl font-bold tracking-tight">
+            {{ discipline.name }}
+        </h1>
+
+        <p class="mt-4 max-w-3xl leading-7 text-gray-600">
+            {{ discipline.description|default:"Няма описание." }}
+        </p>
+
+    </div>
+
+
+    {% if can_edit %}
+        <a
+            href="{% url 'discipline_update' discipline.pk %}"
+            class="border border-gray-300 px-5 py-3 text-sm font-medium hover:bg-gray-50"
+        >
+            Редактирай
+        </a>
+    {% endif %}
+
+</div>
+
+
+<div class="grid gap-6 lg:grid-cols-3">
+
+    <div class="border border-gray-200 bg-white p-6">
+
+        <h2 class="text-lg font-semibold">
+            Преподаватели
+        </h2>
+
+        <div class="mt-5 space-y-3">
+
+            {% for teacher in discipline.teachers.all %}
+
+                <div class="border-b border-gray-100 pb-3 last:border-0">
+
+                    <div class="font-medium">
+                        {{ teacher.first_name }} {{ teacher.last_name }}
+                    </div>
+
+                    <div class="text-sm text-gray-500">
+                        {{ teacher.email }}
+                    </div>
+
+                </div>
+
+            {% empty %}
+
+                <p class="text-sm text-gray-500">
+                    Няма зададени преподаватели.
+                </p>
+
+            {% endfor %}
+
+        </div>
+
+    </div>
+
+
+    <div class="border border-gray-200 bg-white p-6">
+
+        <div class="flex items-center justify-between">
+
+            <h2 class="text-lg font-semibold">
+                Студенти
+            </h2>
+
+            <span class="text-sm text-gray-500">
+                {{ discipline.students.count }}
+            </span>
+
+        </div>
+
+        <div class="mt-5 space-y-3">
+
+            {% for student in discipline.students.all %}
+
+                <div class="border-b border-gray-100 pb-3 last:border-0">
+
+                    <div class="font-medium">
+                        {{ student.first_name }} {{ student.last_name }}
+                    </div>
+
+                    <div class="text-sm text-gray-500">
+                        @{{ student.username }}
+                    </div>
+
+                </div>
+
+            {% empty %}
+
+                <p class="text-sm text-gray-500">
+                    Няма записани студенти.
+                </p>
+
+            {% endfor %}
+
+        </div>
+
+    </div>
+
+
+    <div class="border border-gray-200 bg-white p-6">
+
+        <div class="flex items-center justify-between">
+
+            <h2 class="text-lg font-semibold">
+                Задания
+            </h2>
+
+            <span class="text-sm text-gray-500">
+                {{ discipline.assignments.count }}
+            </span>
+
+        </div>
+
+
+        {% if user.role == "TEACHER" or user.role == "ADMIN" or user.is_superuser %}
+
+            <a
+                href="{% url 'assignment_create' discipline.pk %}"
+                class="mt-5 block bg-black px-4 py-3 text-center text-sm font-medium text-white hover:bg-gray-800"
+            >
+                + Ново задание
+            </a>
+
+        {% endif %}
+
+
+        <div class="mt-5 space-y-4">
+
+            {% for assignment in discipline.assignments.all %}
+
+                <a
+                    href="{% url 'assignment_detail' assignment.pk %}"
+                    class="block border border-gray-200 p-4 hover:border-black"
+                >
+
+                    <div class="font-medium">
+                        {{ assignment.title }}
+                    </div>
+
+                    <div class="mt-2 text-xs text-gray-500">
+                        Краен срок:
+                        {{ assignment.deadline|date:"d.m.Y H:i" }}
+                    </div>
+
+                </a>
+
+            {% empty %}
+
+                <p class="py-4 text-sm text-gray-500">
+                    Няма задания.
+                </p>
+
+            {% endfor %}
+
+        </div>
+
+    </div>
+
+</div>
+
+
+{% if user.role == "ADMIN" or user.is_superuser %}
+
+    <div class="mt-8 flex justify-end">
+
+        <a
+            href="{% url 'discipline_delete' discipline.pk %}"
+            class="text-sm font-medium text-red-600 hover:underline"
+        >
+            Изтрий дисциплината
+        </a>
+
+    </div>
+
+{% endif %}
+
+{% endblock %}

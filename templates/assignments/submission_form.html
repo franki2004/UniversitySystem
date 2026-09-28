@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+
+{% block title %}Предаване на решение{% endblock %}
+
+{% block content %}
+
+<div class="mx-auto max-w-2xl">
+
+    <div class="mb-8">
+
+        <a
+            href="{% url 'assignment_detail' assignment.pk %}"
+            class="text-sm text-gray-500 hover:text-black hover:underline"
+        >
+            ← {{ assignment.title }}
+        </a>
+
+        <h1 class="mt-4 text-3xl font-bold tracking-tight">
+            {% if submission %}
+                Предай нов файл
+            {% else %}
+                Предай решение
+            {% endif %}
+        </h1>
+
+    </div>
+
+
+    <div class="border border-gray-200 bg-white p-8">
+
+        <div class="mb-8 border-b border-gray-200 pb-6">
+
+            <p class="text-sm text-gray-500">
+                Задание
+            </p>
+
+            <h2 class="mt-1 text-lg font-semibold">
+                {{ assignment.title }}
+            </h2>
+
+            <p class="mt-2 text-sm text-gray-500">
+                Краен срок:
+                {{ assignment.deadline|date:"d.m.Y H:i" }}
+            </p>
+
+        </div>
+
+
+        <form
+            method="post"
+            enctype="multipart/form-data"
+        >
+
+            {% csrf_token %}
+
+            <label class="mb-2 block text-sm font-medium">
+                Файл с решението
+            </label>
+
+            {{ form.file }}
+
+            {% for error in form.file.errors %}
+                <p class="mt-2 text-sm text-red-600">
+                    {{ error }}
+                </p>
+            {% endfor %}
+
+
+            <div class="mt-8 flex justify-end gap-3 border-t border-gray-200 pt-6">
+
+                <a
+                    href="{% url 'assignment_detail' assignment.pk %}"
+                    class="border border-gray-300 px-5 py-3 text-sm font-medium hover:bg-gray-50"
+                >
+                    Отказ
+                </a>
+
+                <button
+                    type="submit"
+                    class="bg-black px-5 py-3 text-sm font-medium text-white hover:bg-gray-800"
+                >
+                    Предай
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,134 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+
+<div class="mx-auto max-w-3xl">
+
+    <div class="mb-8">
+
+        <a
+            href="{% if assignment %}{% url 'assignment_detail' assignment.pk %}{% else %}{% url 'discipline_detail' discipline.pk %}{% endif %}"
+            class="text-sm text-gray-500 hover:text-black hover:underline"
+        >
+            ← Назад
+        </a>
+
+        <h1 class="mt-4 text-3xl font-bold tracking-tight">
+            {{ title }}
+        </h1>
+
+        <p class="mt-2 text-gray-500">
+            Дисциплина:
+            <strong>{{ discipline.name }}</strong>
+        </p>
+
+    </div>
+
+
+    <div class="border border-gray-200 bg-white p-8">
+
+        <form
+            method="post"
+            enctype="multipart/form-data"
+            class="space-y-6"
+        >
+
+            {% csrf_token %}
+
+            {% if form.non_field_errors %}
+                <div class="border border-red-200 bg-red-50 p-4 text-sm text-red-700">
+                    {{ form.non_field_errors }}
+                </div>
+            {% endif %}
+
+
+            <div>
+                <label class="mb-2 block text-sm font-medium">
+                    Заглавие
+                </label>
+
+                {{ form.title }}
+
+                {% for error in form.title.errors %}
+                    <p class="mt-1 text-sm text-red-600">
+                        {{ error }}
+                    </p>
+                {% endfor %}
+            </div>
+
+
+            <div>
+                <label class="mb-2 block text-sm font-medium">
+                    Описание
+                </label>
+
+                {{ form.description }}
+            </div>
+
+
+            <div>
+                <label class="mb-2 block text-sm font-medium">
+                    Краен срок
+                </label>
+
+                {{ form.deadline }}
+
+                {% for error in form.deadline.errors %}
+                    <p class="mt-1 text-sm text-red-600">
+                        {{ error }}
+                    </p>
+                {% endfor %}
+            </div>
+
+
+            <div>
+
+                <label class="mb-2 block text-sm font-medium">
+                    Файл към заданието
+                </label>
+
+                {{ form.attachment }}
+
+                {% if assignment.attachment %}
+                    <p class="mt-2 text-sm text-gray-500">
+                        Текущ файл:
+                        <a
+                            href="{{ assignment.attachment.url }}"
+                            target="_blank"
+                            class="font-medium hover:underline"
+                        >
+                            {{ assignment.attachment.name }}
+                        </a>
+                    </p>
+                {% endif %}
+
+            </div>
+
+
+            <div class="flex justify-end gap-3 border-t border-gray-200 pt-6">
+
+                <a
+                    href="{% if assignment %}{% url 'assignment_detail' assignment.pk %}{% else %}{% url 'discipline_detail' discipline.pk %}{% endif %}"
+                    class="border border-gray-300 px-5 py-3 text-sm font-medium hover:bg-gray-50"
+                >
+                    Отказ
+                </a>
+
+                <button
+                    type="submit"
+                    class="bg-black px-5 py-3 text-sm font-medium text-white hover:bg-gray-800"
+                >
+                    Запази
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+{% endblock %}

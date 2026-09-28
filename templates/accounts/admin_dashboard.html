@@ -1,0 +1,264 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard{% endblock %}
+
+{% block content %}
+
+<div class="mb-10">
+
+    <p class="text-sm font-medium uppercase tracking-wide text-gray-500">
+        Администрация
+    </p>
+
+    <h1 class="mt-2 text-4xl font-bold tracking-tight">
+        Dashboard
+    </h1>
+
+    <p class="mt-3 text-gray-500">
+        Общ преглед на системата и последните активности.
+    </p>
+
+</div>
+
+
+<!-- Statistics -->
+
+<div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+
+    <a
+        href="{% url 'user_list' %}"
+        class="border border-gray-200 bg-white p-6 hover:border-black"
+    >
+        <p class="text-sm text-gray-500">
+            Потребители
+        </p>
+
+        <p class="mt-2 text-3xl font-bold">
+            {{ users_count }}
+        </p>
+
+        <p class="mt-3 text-xs text-gray-500">
+            {{ teachers_count }} преподаватели ·
+            {{ students_count }} студенти
+        </p>
+    </a>
+
+
+    <a
+        href="{% url 'discipline_list' %}"
+        class="border border-gray-200 bg-white p-6 hover:border-black"
+    >
+        <p class="text-sm text-gray-500">
+            Дисциплини
+        </p>
+
+        <p class="mt-2 text-3xl font-bold">
+            {{ disciplines_count }}
+        </p>
+    </a>
+
+
+    <div class="border border-gray-200 bg-white p-6">
+
+        <p class="text-sm text-gray-500">
+            Задания
+        </p>
+
+        <p class="mt-2 text-3xl font-bold">
+            {{ assignments_count }}
+        </p>
+
+    </div>
+
+
+    <div class="border border-gray-200 bg-white p-6">
+
+        <p class="text-sm text-gray-500">
+            Предавания
+        </p>
+
+        <p class="mt-2 text-3xl font-bold">
+            {{ submissions_count }}
+        </p>
+
+        {% if ungraded_submissions %}
+            <p class="mt-3 text-xs font-medium text-red-600">
+                {{ ungraded_submissions }} без оценка
+            </p>
+        {% endif %}
+
+    </div>
+
+</div>
+
+
+<div class="mt-10 grid gap-6 lg:grid-cols-2">
+
+    <!-- Recent assignments -->
+
+    <section class="border border-gray-200 bg-white">
+
+        <div class="flex items-center justify-between border-b border-gray-200 px-6 py-5">
+
+            <h2 class="font-semibold">
+                Последни задания
+            </h2>
+
+            <a
+                href="{% url 'discipline_list' %}"
+                class="text-sm font-medium hover:underline"
+            >
+                Дисциплини →
+            </a>
+
+        </div>
+
+
+        <div class="divide-y divide-gray-100">
+
+            {% for assignment in recent_assignments %}
+
+                <a
+                    href="{% url 'assignment_detail' assignment.pk %}"
+                    class="block px-6 py-5 hover:bg-gray-50"
+                >
+
+                    <div class="flex items-start justify-between gap-4">
+
+                        <div>
+                            <p class="font-medium">
+                                {{ assignment.title }}
+                            </p>
+
+                            <p class="mt-1 text-sm text-gray-500">
+                                {{ assignment.discipline.name }}
+                            </p>
+                        </div>
+
+                        <span class="text-xs text-gray-400">
+                            {{ assignment.created_at|date:"d.m.Y" }}
+                        </span>
+
+                    </div>
+
+                </a>
+
+            {% empty %}
+
+                <div class="px-6 py-10 text-center text-sm text-gray-500">
+                    Няма задания.
+                </div>
+
+            {% endfor %}
+
+        </div>
+
+    </section>
+
+
+    <!-- Recent submissions -->
+
+    <section class="border border-gray-200 bg-white">
+
+        <div class="flex items-center justify-between border-b border-gray-200 px-6 py-5">
+
+            <h2 class="font-semibold">
+                Последни предавания
+            </h2>
+
+            <span class="text-sm text-gray-500">
+                {{ ungraded_submissions }} за оценяване
+            </span>
+
+        </div>
+
+
+        <div class="divide-y divide-gray-100">
+
+            {% for submission in recent_submissions %}
+
+                <a
+                    href="{% url 'submission_list' submission.assignment.pk %}"
+                    class="block px-6 py-5 hover:bg-gray-50"
+                >
+
+                    <div class="flex items-start justify-between gap-4">
+
+                        <div>
+
+                            <p class="font-medium">
+                                {{ submission.student.first_name }}
+                                {{ submission.student.last_name }}
+                            </p>
+
+                            <p class="mt-1 text-sm text-gray-500">
+                                {{ submission.assignment.title }}
+                            </p>
+
+                        </div>
+
+                        {% if submission.grade %}
+                            <span class="text-sm font-semibold">
+                                {{ submission.grade }}
+                            </span>
+                        {% else %}
+                            <span class="text-xs font-medium text-red-600">
+                                Без оценка
+                            </span>
+                        {% endif %}
+
+                    </div>
+
+                </a>
+
+            {% empty %}
+
+                <div class="px-6 py-10 text-center text-sm text-gray-500">
+                    Няма предавания.
+                </div>
+
+            {% endfor %}
+
+        </div>
+
+    </section>
+
+</div>
+
+
+<!-- Quick actions -->
+
+<section class="mt-6 border border-gray-200 bg-white p-6">
+
+    <h2 class="font-semibold">
+        Бързи действия
+    </h2>
+
+    <div class="mt-5 flex flex-wrap gap-3">
+
+        <a
+            href="{% url 'user_create' %}"
+            class="bg-black px-5 py-3 text-sm font-medium text-white hover:bg-gray-800"
+        >
+            + Нов потребител
+        </a>
+
+        <a
+            href="{% url 'discipline_create' %}"
+            class="border border-gray-300 px-5 py-3 text-sm font-medium hover:bg-gray-50"
+        >
+            + Нова дисциплина
+        </a>
+
+        <a
+            href="{% url 'admin:index' %}"
+            class="border border-gray-300 px-5 py-3 text-sm font-medium hover:bg-gray-50"
+        >
+            Django Admin
+        </a>
+
+    </div>
+
+</section>
+
+{% endblock %}

@@ -1,0 +1,130 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        {% block title %}University System{% endblock %}
+    </title>
+
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+
+    {% block extra_head %}{% endblock %}
+</head>
+
+<body class="min-h-screen bg-gray-50 text-gray-900">
+
+    <header class="border-b border-gray-200 bg-white">
+        <div class="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
+
+            <a
+                href="{% url 'home' %}"
+                class="text-xl font-bold tracking-tight"
+            >
+                University System
+            </a>
+
+            {% if user.is_authenticated %}
+
+                <nav class="flex items-center gap-6">
+            
+                    <a
+                        href="{% url 'dashboard' %}"
+                        class="text-sm font-medium hover:underline"
+                    >
+                        Dashboard
+                    </a>
+            
+                    <a
+                        href="{% url 'discipline_list' %}"
+                        class="text-sm font-medium hover:underline"
+                    >
+                        Дисциплини
+                    </a>
+            
+                    {% if user.role == "ADMIN" or user.is_superuser %}
+            
+                        <a
+                            href="{% url 'user_list' %}"
+                            class="text-sm font-medium hover:underline"
+                        >
+                            Потребители
+                        </a>
+            
+                    {% endif %}
+            
+                    <div class="border-l border-gray-200 pl-6 text-right">
+                        <div class="text-sm font-semibold">
+                            {{ user.get_full_name|default:user.username }}
+                        </div>
+            
+                        <div class="text-xs text-gray-500">
+                            {{ user.get_role_display }}
+                        </div>
+                    </div>
+            
+                    <form method="post" action="{% url 'logout' %}">
+                        {% csrf_token %}
+            
+                        <button
+                            type="submit"
+                            class="text-sm font-medium text-gray-600 hover:text-black hover:underline"
+                        >
+                            Изход
+                        </button>
+                    </form>
+            
+                </nav>
+            
+          
+
+            {% else %}
+
+                <a
+                    href="{% url 'login' %}"
+                    class="bg-black px-5 py-2.5 text-sm font-medium text-white hover:bg-gray-800"
+                >
+                    Вход
+                </a>
+
+            {% endif %}
+
+        </div>
+    </header>
+
+
+    <main class="mx-auto w-full max-w-7xl px-6 py-10">
+
+        {% if messages %}
+            <div class="mb-6 space-y-3">
+                {% for message in messages %}
+                    <div class="border border-gray-200 bg-white px-4 py-3 text-sm">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        {% block content %}
+        {% endblock %}
+
+    </main>
+
+
+    <footer class="mt-auto border-t border-gray-200 bg-white">
+        <div class="mx-auto max-w-7xl px-6 py-6">
+            <p class="text-sm text-gray-500">
+                University System
+            </p>
+        </div>
+    </footer>
+
+</body>
+</html>
