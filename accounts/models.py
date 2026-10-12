@@ -13,6 +13,13 @@ class User(AbstractUser):
         choices=Role.choices,
         default=Role.STUDENT,
     )
+    faculty_number = models.CharField(
+    max_length=30,
+    unique=True,
+    null=True,
+    blank=True,
+    verbose_name="Факултетен номер",
+)
 
     def __str__(self):
         return self.username

@@ -4,195 +4,329 @@
 
 {% block content %}
 
-<div class="mb-8 flex items-start justify-between gap-6">
+<div class="space-y-8">
 
-    <div>
+    <!-- Заглавие на дисциплината -->
+    <section class="flex flex-col justify-between gap-5 border-b border-gray-200 pb-6 sm:flex-row sm:items-start">
 
-        <a
-            href="{% url 'discipline_list' %}"
-            class="text-sm text-gray-500 hover:text-black hover:underline"
-        >
-            ← Дисциплини
-        </a>
+        <div>
+            <a
+                href="{% url 'discipline_list' %}"
+                class="text-sm text-gray-500 hover:text-black hover:underline"
+            >
+                ← Дисциплини
+            </a>
 
-        <h1 class="mt-4 text-4xl font-bold tracking-tight">
-            {{ discipline.name }}
-        </h1>
+            <h1 class="mt-4 text-3xl font-bold tracking-tight text-black sm:text-4xl">
+                {{ discipline.name }}
+            </h1>
 
-        <p class="mt-4 max-w-3xl leading-7 text-gray-600">
-            {{ discipline.description|default:"Няма описание." }}
-        </p>
+            <p class="mt-4 max-w-4xl leading-7 text-gray-600">
+                {{ discipline.description|default:"Няма описание." }}
+            </p>
+        </div>
+
+        {% if can_edit %}
+            <a
+                href="{% url 'discipline_update' discipline.pk %}"
+                class="shrink-0 border border-gray-300 px-5 py-3 text-center text-sm font-medium hover:border-black hover:bg-gray-50"
+            >
+                Редактирай дисциплината
+            </a>
+        {% endif %}
+
+    </section>
+
+
+    <!-- Съобщения -->
+    {% if messages %}
+        <div class="space-y-2">
+            {% for message in messages %}
+                <div class="border border-gray-300 bg-white px-4 py-3 text-sm text-gray-800">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+
+    <!-- Преподаватели и студенти -->
+    <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
+
+        <!-- Преподаватели -->
+        <section class="min-w-0 border border-gray-200 bg-white p-5 sm:p-6">
+
+            <div class="flex items-center justify-between gap-3">
+                <div>
+                    <h2 class="text-lg font-bold text-black">
+                        Преподаватели
+                    </h2>
+
+                    <p class="mt-1 text-sm text-gray-500">
+                        Преподаватели по дисциплината
+                    </p>
+                </div>
+
+                <span class="shrink-0 text-sm text-gray-500">
+                    {{ discipline.teachers.count }}
+                </span>
+            </div>
+
+            <div class="mt-5 flex gap-3 overflow-x-auto pb-3">
+
+                {% for teacher in discipline.teachers.all %}
+                    <div class="min-w-56 shrink-0 border border-gray-200 p-4">
+
+                        <p class="font-semibold text-black">
+                            {{ teacher.get_full_name|default:teacher.username }}
+                        </p>
+
+                        {% if teacher.email %}
+                            <p class="mt-1 text-sm text-gray-500">
+                                {{ teacher.email }}
+                            </p>
+                        {% endif %}
+
+                    </div>
+                {% empty %}
+                    <p class="w-full border border-gray-100 px-4 py-5 text-sm text-gray-500">
+                        Няма зададени преподаватели.
+                    </p>
+                {% endfor %}
+
+            </div>
+
+            <p class="mt-1 text-xs text-gray-400">
+                Плъзни хоризонтално, ако има още преподаватели.
+            </p>
+
+        </section>
+
+
+        <!-- Студенти: показват се само веднъж -->
+        <section class="min-w-0 border border-gray-200 bg-white p-5 sm:p-6">
+
+            <div class="flex items-center justify-between gap-3">
+                <div>
+                    <h2 class="text-lg font-bold text-black">
+                        Студенти
+                    </h2>
+
+                    <p class="mt-1 text-sm text-gray-500">
+                        Записани в дисциплината
+                    </p>
+                </div>
+
+                <span class="shrink-0 text-sm text-gray-500">
+                    {{ discipline.students.count }}
+                </span>
+            </div>
+
+            <div class="mt-5 flex gap-3 overflow-x-auto pb-3">
+
+                {% for student in discipline.students.all %}
+                    <div class="flex min-w-64 shrink-0 items-center justify-between gap-4 border border-gray-200 p-4">
+
+                        <div class="min-w-0">
+                            <p class="truncate font-semibold text-black">
+                                {{ student.get_full_name|default:student.username }}
+                            </p>
+
+                            <p class="mt-1 text-sm text-gray-500">
+                                Фак. номер:
+                                {{ student.faculty_number|default:"Не е въведен" }}
+                            </p>
+                        </div>
+
+                        {% if can_manage_students %}
+                            <form
+                                method="post"
+                                class="shrink-0"
+                                onsubmit="return confirm('Сигурни ли сте, че искате да премахнете студента от дисциплината?');"
+                            >
+                                {% csrf_token %}
+
+                                <button
+                                    type="submit"
+                                    name="remove_student"
+                                    value="{{ student.pk }}"
+                                    class="border border-gray-300 px-3 py-2 text-sm text-gray-700 hover:border-red-600 hover:text-red-600"
+                                >
+                                    Премахни
+                                </button>
+                            </form>
+                        {% endif %}
+
+                    </div>
+                {% empty %}
+                    <p class="w-full border border-gray-100 px-4 py-5 text-sm text-gray-500">
+                        Няма записани студенти.
+                    </p>
+                {% endfor %}
+
+            </div>
+
+            <p class="mt-1 text-xs text-gray-400">
+                Плъзни хоризонтално, за да видиш всички студенти.
+            </p>
+
+        </section>
 
     </div>
 
 
-    {% if can_edit %}
-        <a
-            href="{% url 'discipline_update' discipline.pk %}"
-            class="border border-gray-300 px-5 py-3 text-sm font-medium hover:bg-gray-50"
-        >
-            Редактирай
-        </a>
+    <!-- Добавяне на студенти: отделна широка секция -->
+    {% if can_manage_students %}
+        <section class="border border-gray-200 bg-white p-5 sm:p-7">
+
+            <div class="mb-6 border-b border-gray-200 pb-5">
+                <h2 class="text-xl font-bold text-black">
+                    Добавяне на студенти
+                </h2>
+
+                <p class="mt-2 max-w-3xl text-sm leading-6 text-gray-600">
+                    Избери един или повече студенти. Ще виждаш името, фамилията
+                    и факултетния номер. Студентите, които вече са записани,
+                    няма да се показват в списъка.
+                </p>
+            </div>
+
+            {% if available_students_count > 0 %}
+
+                <form method="post" class="space-y-5">
+                    {% csrf_token %}
+
+                    {% if add_students_form.non_field_errors %}
+                        <div class="border border-red-300 px-4 py-3 text-sm text-red-700">
+                            {{ add_students_form.non_field_errors }}
+                        </div>
+                    {% endif %}
+
+                    <div class="max-w-4xl">
+                        <label
+                            for="{{ add_students_form.students.id_for_label }}"
+                            class="mb-2 block text-sm font-semibold text-gray-900"
+                        >
+                            Избери студенти
+                        </label>
+
+                        {{ add_students_form.students }}
+
+                        {% if add_students_form.students.help_text %}
+                            <p class="mt-2 text-sm text-gray-500">
+                                {{ add_students_form.students.help_text }}
+                            </p>
+                        {% endif %}
+
+                        {% for error in add_students_form.students.errors %}
+                            <p class="mt-2 text-sm text-red-600">
+                                {{ error }}
+                            </p>
+                        {% endfor %}
+                    </div>
+
+                    <button
+                        type="submit"
+                        name="add_students"
+                        value="1"
+                        class="border border-black bg-black px-6 py-3 text-sm font-semibold text-white hover:bg-gray-800"
+                    >
+                        + Добави избраните студенти
+                    </button>
+
+                </form>
+
+            {% else %}
+
+                <p class="border border-gray-200 bg-gray-50 px-4 py-4 text-sm text-gray-600">
+                    Всички налични студенти вече са записани в тази дисциплина.
+                </p>
+
+            {% endif %}
+
+        </section>
+    {% endif %}
+
+
+    <!-- Задания: отделна широка секция -->
+    <section class="border border-gray-200 bg-white p-5 sm:p-7">
+
+        <div class="flex flex-col justify-between gap-4 border-b border-gray-200 pb-5 sm:flex-row sm:items-center">
+
+            <div>
+                <h2 class="text-2xl font-bold text-black">
+                    Задания
+                </h2>
+
+                <p class="mt-1 text-sm text-gray-500">
+                    Задания и крайни срокове по дисциплината
+                </p>
+            </div>
+
+            <div class="flex items-center gap-4">
+                <span class="text-sm text-gray-500">
+                    Общо: {{ discipline.assignments.count }}
+                </span>
+
+                {% if user.role == "TEACHER" or user.role == "ADMIN" or user.is_superuser %}
+                    <a
+                        href="{% url 'assignment_create' discipline.pk %}"
+                        class="border border-black bg-black px-5 py-3 text-center text-sm font-semibold text-white hover:bg-gray-800"
+                    >
+                        + Ново задание
+                    </a>
+                {% endif %}
+            </div>
+
+        </div>
+
+        <div class="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+
+            {% for assignment in discipline.assignments.all %}
+                <a
+                    href="{% url 'assignment_detail' assignment.pk %}"
+                    class="flex min-h-36 flex-col justify-between border border-gray-200 p-5 hover:border-black"
+                >
+                    <div>
+                        <h3 class="font-semibold text-black">
+                            {{ assignment.title }}
+                        </h3>
+
+                        <p class="mt-2 line-clamp-3 text-sm leading-6 text-gray-600">
+                            {{ assignment.description|default:"Няма описание." }}
+                        </p>
+                    </div>
+
+                    <div class="mt-5 border-t border-gray-100 pt-3 text-sm text-gray-500">
+                        Краен срок:
+                        <span class="font-medium text-gray-800">
+                            {{ assignment.deadline|date:"d.m.Y H:i" }}
+                        </span>
+                    </div>
+                </a>
+            {% empty %}
+                <p class="col-span-full border border-gray-100 px-4 py-8 text-center text-sm text-gray-500">
+                    Все още няма задания по тази дисциплина.
+                </p>
+            {% endfor %}
+
+        </div>
+
+    </section>
+
+
+    <!-- Изтриване на дисциплината -->
+    {% if user.role == "ADMIN" or user.is_superuser %}
+        <div class="flex justify-end border-t border-gray-200 pt-5">
+            <a
+                href="{% url 'discipline_delete' discipline.pk %}"
+                class="text-sm font-medium text-red-600 hover:underline"
+            >
+                Изтрий дисциплината
+            </a>
+        </div>
     {% endif %}
 
 </div>
-
-
-<div class="grid gap-6 lg:grid-cols-3">
-
-    <div class="border border-gray-200 bg-white p-6">
-
-        <h2 class="text-lg font-semibold">
-            Преподаватели
-        </h2>
-
-        <div class="mt-5 space-y-3">
-
-            {% for teacher in discipline.teachers.all %}
-
-                <div class="border-b border-gray-100 pb-3 last:border-0">
-
-                    <div class="font-medium">
-                        {{ teacher.first_name }} {{ teacher.last_name }}
-                    </div>
-
-                    <div class="text-sm text-gray-500">
-                        {{ teacher.email }}
-                    </div>
-
-                </div>
-
-            {% empty %}
-
-                <p class="text-sm text-gray-500">
-                    Няма зададени преподаватели.
-                </p>
-
-            {% endfor %}
-
-        </div>
-
-    </div>
-
-
-    <div class="border border-gray-200 bg-white p-6">
-
-        <div class="flex items-center justify-between">
-
-            <h2 class="text-lg font-semibold">
-                Студенти
-            </h2>
-
-            <span class="text-sm text-gray-500">
-                {{ discipline.students.count }}
-            </span>
-
-        </div>
-
-        <div class="mt-5 space-y-3">
-
-            {% for student in discipline.students.all %}
-
-                <div class="border-b border-gray-100 pb-3 last:border-0">
-
-                    <div class="font-medium">
-                        {{ student.first_name }} {{ student.last_name }}
-                    </div>
-
-                    <div class="text-sm text-gray-500">
-                        @{{ student.username }}
-                    </div>
-
-                </div>
-
-            {% empty %}
-
-                <p class="text-sm text-gray-500">
-                    Няма записани студенти.
-                </p>
-
-            {% endfor %}
-
-        </div>
-
-    </div>
-
-
-    <div class="border border-gray-200 bg-white p-6">
-
-        <div class="flex items-center justify-between">
-
-            <h2 class="text-lg font-semibold">
-                Задания
-            </h2>
-
-            <span class="text-sm text-gray-500">
-                {{ discipline.assignments.count }}
-            </span>
-
-        </div>
-
-
-        {% if user.role == "TEACHER" or user.role == "ADMIN" or user.is_superuser %}
-
-            <a
-                href="{% url 'assignment_create' discipline.pk %}"
-                class="mt-5 block bg-black px-4 py-3 text-center text-sm font-medium text-white hover:bg-gray-800"
-            >
-                + Ново задание
-            </a>
-
-        {% endif %}
-
-
-        <div class="mt-5 space-y-4">
-
-            {% for assignment in discipline.assignments.all %}
-
-                <a
-                    href="{% url 'assignment_detail' assignment.pk %}"
-                    class="block border border-gray-200 p-4 hover:border-black"
-                >
-
-                    <div class="font-medium">
-                        {{ assignment.title }}
-                    </div>
-
-                    <div class="mt-2 text-xs text-gray-500">
-                        Краен срок:
-                        {{ assignment.deadline|date:"d.m.Y H:i" }}
-                    </div>
-
-                </a>
-
-            {% empty %}
-
-                <p class="py-4 text-sm text-gray-500">
-                    Няма задания.
-                </p>
-
-            {% endfor %}
-
-        </div>
-
-    </div>
-
-</div>
-
-
-{% if user.role == "ADMIN" or user.is_superuser %}
-
-    <div class="mt-8 flex justify-end">
-
-        <a
-            href="{% url 'discipline_delete' discipline.pk %}"
-            class="text-sm font-medium text-red-600 hover:underline"
-        >
-            Изтрий дисциплината
-        </a>
-
-    </div>
-
-{% endif %}
 
 {% endblock %}
