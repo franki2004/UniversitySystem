@@ -13,6 +13,10 @@ class AssignmentForm(forms.ModelForm):
 
         for field in self.fields.values():
             field.widget.attrs["class"] = FORM_INPUT_CLASS
+        self.fields["deadline"].input_formats = [
+                    "%Y-%m-%dT%H:%M",
+                ]
+            
             
     class Meta:
         model = Assignment
@@ -34,22 +38,27 @@ class AssignmentForm(forms.ModelForm):
                 format="%Y-%m-%dT%H:%M",
             ),
         }
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-        self.fields["deadline"].input_formats = [
-            "%Y-%m-%dT%H:%M",
-        ]
+        
 
 
 class SubmissionForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+    
+        for field in self.fields.values():
+            field.widget.attrs["class"] = FORM_INPUT_CLASS
+
     class Meta:
         model = Submission
         fields = ["file"]
 
 
 class GradeForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+    
+        for field in self.fields.values():
+            field.widget.attrs["class"] = FORM_INPUT_CLASS
     class Meta:
         model = Submission
         fields = [

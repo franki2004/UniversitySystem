@@ -100,6 +100,19 @@
                     </p>
                 {% endfor %}
             </div>
+            <div>
+                <label class="mb-2 block text-sm font-medium">
+                    Факултетен номер
+                </label>
+
+                {{ form.faculty_number }}
+
+                {% for error in form.faculty_number.errors %}
+                    <p class="mt-1 text-sm text-red-600">
+                        {{ error }}
+                    </p>
+                {% endfor %}
+            </div>
 
 
             <div>
@@ -179,7 +192,7 @@
 
                 <button
                     type="submit"
-                    class="bg-black px-5 py-3 text-sm font-medium text-white hover:bg-gray-800"
+                    class="bg-black px-5 py-3 text-sm font-medium text-white hover:bg-gray-800 cursor-pointer"
                 >
                     Запази
                 </button>
