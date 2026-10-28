@@ -47,6 +47,10 @@ def admin_dashboard(request):
         role=User.Role.STUDENT
     ).count()
 
+    admins_count = User.objects.filter(
+            role=User.Role.ADMIN
+        ).count()
+
     disciplines_count = Discipline.objects.count()
 
     assignments_count = Assignment.objects.count()
@@ -72,12 +76,14 @@ def admin_dashboard(request):
         "users_count": users_count,
         "teachers_count": teachers_count,
         "students_count": students_count,
+        "admins_count" : admins_count,
         "disciplines_count": disciplines_count,
         "assignments_count": assignments_count,
         "submissions_count": submissions_count,
         "ungraded_submissions": ungraded_submissions,
         "recent_assignments": recent_assignments,
         "recent_submissions": recent_submissions,
+        
     }
 
     return render(

@@ -10,7 +10,6 @@ load_dotenv(BASE_DIR / ".env")
 
 SECRET_KEY = os.environ.get("SECRET_KEY")
 DEBUG = os.environ.get("DEBUG", "True").lower() == "true"
-print(DEBUG)
 ALLOWED_HOSTS = [
     "127.0.0.1",
     "localhost",
